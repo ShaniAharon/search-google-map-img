@@ -96,7 +96,7 @@ export async function searchGoogleMaps(searchQuery) {
         console.log("parents", parents.length);
         const main = $('div[role="main"]');
         const image1 = main.find("button img").attr("src");
-        const image2 = main.find("img").attr("src");
+        let image2 = main.find("img").attr("src");
         // Find the first image with src starting with 
         console.log("image1", image1);
         console.log("image2", image2);
