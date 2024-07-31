@@ -25,12 +25,6 @@ export async function searchGoogleMaps(searchQuery) {
 
         const browser = await puppeteer.launch({
             headless: true,
-            args: [
-                // "--disable-setuid-sandbox",
-                "--no-sandbox",
-                // "--single-process",
-                // "--no-zygote",
-            ],
             executablePath:
                 process.env.NODE_ENV === "production"
                     ? process.env.PUPPETEER_EXECUTABLE_PATH
@@ -103,8 +97,12 @@ export async function searchGoogleMaps(searchQuery) {
         const main = $('div[role="main"]');
         const image1 = main.find("button img").attr("src");
         const image2 = main.find("img").attr("src");
+        // Find the first image with src starting with 
         console.log("image1", image1);
         console.log("image2", image2);
+        const specificImage = $('img[src^="https://lh5"]');
+        image2 = specificImage.attr("src");
+        console.log('image2 after ', image2)
 
         const businesses = [];
 
