@@ -42,6 +42,34 @@ export async function searchGoogleMaps(searchQuery) {
             console.log("Error going to page:", error);
         }
 
+        // Evaluate the content within the browser context
+        const result = await page.evaluate(() => {
+            const aTags = Array.from(document.querySelectorAll('a'));
+            const parents = [];
+
+            aTags.forEach(el => {
+                const href = el.getAttribute('href');
+                if (href && href.includes("/maps/place/")) {
+                    parents.push(el.parentElement);
+                }
+            });
+
+            const main = document.querySelector('div[role="main"]');
+            const image1 = main.querySelector("button img")?.getAttribute("src");
+            let image2 = main.querySelector("img")?.getAttribute("src");
+
+            // Find the first image with src starting with "https://lh5"
+            const specificImage = document.querySelector('img[src^="https://lh5"]');
+            image2 = specificImage ? specificImage.getAttribute("src") : image2;
+
+            return {
+                parentsCount: parents.length,
+                image1,
+                image2,
+            };
+        });
+        console.log('resulat', result)
+
         async function autoScroll(page) {
             await page.evaluate(async () => {
                 const wrapper = document.querySelector('div[role="feed"]');
