@@ -26,10 +26,10 @@ export async function searchGoogleMaps(searchQuery) {
         const browser = await puppeteer.launch({
             headless: true,
             args: [
-                "--disable-setuid-sandbox",
+                // "--disable-setuid-sandbox",
                 "--no-sandbox",
-                "--single-process",
-                "--no-zygote",
+                // "--single-process",
+                // "--no-zygote",
             ],
             executablePath:
                 process.env.NODE_ENV === "production"
