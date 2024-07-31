@@ -1,6 +1,8 @@
 import * as cheerio from "cheerio";
 import puppeteer from "puppeteer";
 
+
+
 const selectRandomUserAgent = () => {
     const userAgents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64)  AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
@@ -23,10 +25,16 @@ export async function searchGoogleMaps(searchQuery) {
 
         const browser = await puppeteer.launch({
             headless: true,
-            // executablePath:
-            //     process.env.PUPPETEER_EXECUTABLE_PATH ||
-            //     "/usr/bin/chromium-browser", // Path to the installed Chromium
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+            args: [
+                "--disable-setuid-sandbox",
+                "--no-sandbox",
+                "--single-process",
+                "--no-zygote",
+            ],
+            executablePath:
+                process.env.NODE_ENV === "production"
+                    ? process.env.PUPPETEER_EXECUTABLE_PATH
+                    : puppeteer.executablePath(),
         });
 
         const page = await browser.newPage();

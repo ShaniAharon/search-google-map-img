@@ -2,6 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import cron from 'node-cron';
 import axios from 'axios';
+import dotenv from "dotenv"; //import the dotenv
+
+dotenv.config(); // add the config
 
 
 import { loggerService } from './services/logger.service.js';
