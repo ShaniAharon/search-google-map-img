@@ -41,6 +41,12 @@ export async function searchGoogleMaps(searchQuery) {
         } catch (error) {
             console.log("Error going to page:", error);
         }
+        // Wait for the image with src starting with "https://lh5"
+        try {
+            await page.waitForSelector('img[src^="https://lh5"]', { timeout: 10000 });
+        } catch (error) {
+            console.log("Specific image not found within the timeout period:", error);
+        }
 
         // Evaluate the content within the browser context
         const result = await page.evaluate(() => {
