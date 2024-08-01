@@ -37,7 +37,7 @@ export async function searchGoogleMaps(searchQuery) {
         try {
             // await page.goto(url);
             await page.setUserAgent(userAgent);
-            await page.goto(url, { waitUntil: "networkidle2" });
+            await page.goto(url, { waitUntil: "domcontentloaded" });
         } catch (error) {
             console.log("Error going to page:", error);
         }
@@ -72,6 +72,7 @@ export async function searchGoogleMaps(searchQuery) {
                 parentsCount: parents.length,
                 image1,
                 image2,
+                imgUrls
             };
         });
         console.log('resulat', result)
