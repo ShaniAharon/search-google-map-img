@@ -120,7 +120,7 @@ export async function searchGoogleMaps(searchQuery) {
             });
         }
 
-        await autoScroll(page);
+        // await autoScroll(page);
 
         const html = await page.content();
 

@@ -9,6 +9,7 @@ dotenv.config(); // add the config
 
 import { loggerService } from './services/logger.service.js';
 import { searchGoogleMaps } from './services/scrap.service.js';
+import { searchGoogle } from './services/scrapInfo.service.js';
 
 const app = express()
 
@@ -45,6 +46,34 @@ app.post('/search-img', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+//route for search info for summary  
+app.post('/search-info', async (req, res) => {
+    const { query, addOnForSearch } = req.body;
+    console.log('query', query)
+    if (!query) {
+        return res.status(400).json({ error: 'Query is required' });
+    }
+    const modifySearchQuery = addOnForSearch ? query + ' ' + addOnForSearch : query
+
+    try {
+        const result = await searchGoogle(modifySearchQuery);
+        res.json(result);
+    } catch (error) {
+        console.error('Error handling /search request:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// (async () => {
+//     console.log('run search on google')
+//     // const webs = await searchGoogle('accessibility in tourism')
+//     const webs = await searchGoogle('machu picchu accessibility for disabled travellers')
+//     console.log('webs', webs)
+// })().catch(err => {
+//     console.error(err);
+// });
+
 
 app.get('/wake-up', (req, res) => {
     console.log('Service is awake and working');
