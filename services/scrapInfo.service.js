@@ -37,12 +37,14 @@ export async function searchGoogle(searchQuery) {
         console.log("url", url);
 
         await page.goto(url, { waitUntil: "domcontentloaded" });
+        await page.waitForSelector('#search a[href^="http"]', { timeout: 120000 });
 
         const firstResultLink = await page.evaluate(() => {
             // const firstResult = document.querySelector('#res a[href^="http"]'); // second link
-            let firstResult = document.querySelector('#res .g a[href^="http"]');
-            if (!firstResult) {
-                const allLinks = Array.from(document.querySelectorAll('#res .g a[href^="http"]'));
+            // let firstResult = document.querySelector('#res .g a[href^="http"]');
+            let firstResult = document.querySelector('#search a[href^="http"]');
+            if (!firstResult?.href) {
+                const allLinks = Array.from(document.querySelectorAll('#search a[href^="http"]'));
                 const hrefs = allLinks.map(el => el.href)
                 console.log('hrefs', hrefs)
                 firstResult = allLinks[0]
