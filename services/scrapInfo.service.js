@@ -40,7 +40,13 @@ export async function searchGoogle(searchQuery) {
 
         const firstResultLink = await page.evaluate(() => {
             // const firstResult = document.querySelector('#res a[href^="http"]'); // second link
-            const firstResult = document.querySelector('#res .g a[href^="http"]');
+            let firstResult = document.querySelector('#res .g a[href^="http"]');
+            if (!firstResult) {
+                const allLinks = Array.from(document.querySelectorAll('#res .g a[href^="http"]'));
+                const hrefs = allLinks.map(el => el.href)
+                console.log('hrefs', hrefs)
+                firstResult = allLinks[0]
+            }
             return firstResult ? firstResult.href : null;
         });
         console.log('firstResultLink', firstResultLink)
