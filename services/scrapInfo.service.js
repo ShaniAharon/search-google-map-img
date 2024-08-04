@@ -63,8 +63,9 @@ export async function searchGoogle(searchQuery) {
 
         const result = await page.evaluate(() => {
             const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
-            const imgUrls = Array.from(document.querySelectorAll('img')).map(img => img.src);
-            return { textCollected, imgUrls };
+            // const imgUrls = Array.from(document.querySelectorAll('img')).map(img => img.src);
+            // return { textCollected, imgUrls };
+            return { textCollected };
         });
 
         await browser.close();
@@ -73,7 +74,7 @@ export async function searchGoogle(searchQuery) {
         const websites = [{
             websiteLink: firstResultLink,
             textCollected: result.textCollected,
-            imgUrls: result.imgUrls,
+            // imgUrls: result.imgUrls,
         }];
         console.log('websites', websites)
 
