@@ -86,4 +86,74 @@ export async function searchGoogle(searchQuery) {
     }
 }
 
+//TODO: change to all the urls at once
+export async function extractGoogleWebsiteInfo(url) {
+    // const query = searchQuery.split(" ").join("+");
+    // const query = encodeURIComponent(searchQuery);;
+    const userAgent = selectRandomUserAgent();
+    try {
+        const start = Date.now();
+
+        const browser = await puppeteer.launch({
+            headless: true,
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+        });
+
+        const page = await browser.newPage();
+        await page.setUserAgent(userAgent);
+        // const url = `https://www.google.com/search?q=${query}`;
+        // //TODO: can add logic to search in law article with google scholar 
+        // // https://scholar.google.co.th/scholar?hl=en&as_sdt=0%2C5&q=accessibility+in+tourism&oq=
+        // console.log("url", url);
+
+        // await page.goto(url, { waitUntil: "domcontentloaded" });
+        // await page.waitForSelector('#search a[href^="http"]', { timeout: 120000 });
+
+        // const firstResultLink = await page.evaluate(() => {
+        //     // const firstResult = document.querySelector('#res a[href^="http"]'); // second link
+        //     // let firstResult = document.querySelector('#res .g a[href^="http"]');
+        //     let firstResult = document.querySelector('#search a[href^="http"]');
+        //     if (!firstResult?.href) {
+        //         const allLinks = Array.from(document.querySelectorAll('#search a[href^="http"]'));
+        //         const hrefs = allLinks.map(el => el.href)
+        //         console.log('hrefs', hrefs)
+        //         firstResult = allLinks[0]
+        //     }
+        //     return firstResult ? firstResult.href : null;
+        // });
+        // console.log('firstResultLink', firstResultLink)
+
+        // if (!firstResultLink) {
+        //     console.log("No results found.");
+        //     await browser.close();
+        //     return [];
+        // }
+
+        await page.goto(url, { waitUntil: "domcontentloaded" });
+
+        const result = await page.evaluate(() => {
+            const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
+            // const imgUrls = Array.from(document.querySelectorAll('img')).map(img => img.src);
+            // return { textCollected, imgUrls };
+            return { textCollected };
+        });
+
+        await browser.close();
+        console.log("Browser closed");
+
+        const websites = [{
+            websiteLink: url,
+            textCollected: result.textCollected,
+            // imgUrls: result.imgUrls,
+        }];
+        console.log('websites', websites)
+
+        const end = Date.now();
+        console.log(`Time in seconds: ${Math.floor((end - start) / 1000)}`);
+        return websites;
+    } catch (error) {
+        console.log("Error at searchGoogle:", error.message);
+    }
+}
+
 

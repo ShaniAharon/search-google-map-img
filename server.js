@@ -9,7 +9,7 @@ dotenv.config(); // add the config
 
 import { loggerService } from './services/logger.service.js';
 import { searchGoogleMaps } from './services/scrap.service.js';
-import { searchGoogle } from './services/scrapInfo.service.js';
+import { extractGoogleWebsiteInfo, searchGoogle } from './services/scrapInfo.service.js';
 
 const app = express()
 
@@ -58,6 +58,23 @@ app.post('/search-info', async (req, res) => {
 
     try {
         const result = await searchGoogle(modifySearchQuery);
+        res.json(result);
+    } catch (error) {
+        console.error('Error handling /search request:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//route for search info by website url for summary  
+app.post('/search-website-info', async (req, res) => {
+    const { url } = req.body;
+    console.log('query', query)
+    if (!query) {
+        return res.status(400).json({ error: 'Query is required' });
+    }
+
+    try {
+        const result = await extractGoogleWebsiteInfo(url);
         res.json(result);
     } catch (error) {
         console.error('Error handling /search request:', error);
