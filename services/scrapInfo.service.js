@@ -130,6 +130,7 @@ export async function extractGoogleWebsiteInfo(url) {
         // }
 
         await page.goto(url, { waitUntil: "domcontentloaded" });
+        await page.waitForSelector('div', { timeout: 120000 });
 
         const result = await page.evaluate(() => {
             const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
