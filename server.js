@@ -68,9 +68,9 @@ app.post('/search-info', async (req, res) => {
 //route for search info by website url for summary  
 app.post('/search-website-info', async (req, res) => {
     const { url } = req.body;
-    console.log('query', query)
-    if (!query) {
-        return res.status(400).json({ error: 'Query is required' });
+    console.log('url', url)
+    if (!url) {
+        return res.status(400).json({ error: 'url is required' });
     }
 
     try {
