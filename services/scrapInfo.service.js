@@ -157,4 +157,45 @@ export async function extractGoogleWebsiteInfo(url) {
     }
 }
 
+//TODO: change to all the urls at once
+export async function extractGoogleWebsitesInfo(urls) {
+    // const query = searchQuery.split(" ").join("+");
+    // const query = encodeURIComponent(searchQuery);;
+    const userAgent = selectRandomUserAgent();
+    const results = [];
+    try {
+        const start = Date.now();
+
+        const browser = await puppeteer.launch({
+            headless: true,
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+        });
+
+        for (const url of urls) {
+            const page = await browser.newPage();
+            await page.setUserAgent(userAgent);
+            await page.goto(url, { waitUntil: "domcontentloaded" });
+            await page.waitForSelector('div', { timeout: 120000 });
+
+            const result = await page.evaluate(() => {
+                const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
+                return { textCollected };
+            });
+
+            results.push({
+                websiteLink: url,
+                textCollected: result.textCollected,
+            });
+
+            await page.close();
+        }
+
+        await browser.close();
+        return results;
+    } catch (error) {
+        console.error("Error extracting website info:", error);
+        return [];
+    }
+}
+
 
