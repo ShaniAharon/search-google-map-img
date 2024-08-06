@@ -86,10 +86,16 @@ export async function searchGoogle(searchQuery) {
     }
 }
 
+// function filterUrls(urls) {
+//     const problematicPatterns = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx)$/i;
+//     return urls.filter(url => !problematicPatterns.test(url));
+// }
 function filterUrls(urls) {
     const problematicPatterns = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx)$/i;
-    return urls.filter(url => !problematicPatterns.test(url));
+    const uniqueUrls = Array.from(new Set(urls));
+    return uniqueUrls.filter(url => !problematicPatterns.test(url));
 }
+
 
 //retrive first 4 res from google search 
 export async function retriveResFromGoogle(searchQuery, num) {
@@ -232,9 +238,10 @@ export async function extractGoogleWebsitesInfo(urls) {
                 await page.waitForSelector('div', { timeout: 120000 });
 
                 const result = await page.evaluate(() => {
-                    const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
+                    const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6')).map(el => el.innerText);
                     return { textCollected };
                 });
+                console.log('result', result)
 
                 results.push({
                     websiteLink: url,
