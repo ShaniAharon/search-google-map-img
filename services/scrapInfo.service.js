@@ -238,7 +238,7 @@ export async function extractGoogleWebsitesInfo(urls) {
                 await page.waitForSelector('div', { timeout: 120000 });
 
                 const result = await page.evaluate(() => {
-                    const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6')).map(el => el.innerText);
+                    const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
                     return { textCollected };
                 });
                 console.log('result', result)
