@@ -93,7 +93,6 @@ function filterUrls(urls) {
 
 //retrive first 4 res from google search 
 export async function retriveResFromGoogle(searchQuery, num) {
-    console.log(' num', num)
     // const query = searchQuery.split(" ").join("+");
     const query = encodeURIComponent(searchQuery);;
     const userAgent = selectRandomUserAgent();
@@ -113,7 +112,7 @@ export async function retriveResFromGoogle(searchQuery, num) {
         console.log("url", url);
 
         await page.goto(url, { waitUntil: "domcontentloaded" });
-        await page.waitForSelector('#search a[href^="http"]', { timeout: 120000 });
+        await page.waitForSelector('#search a[href^="http"]', { timeout: 160000 });
 
         let urls = await page.evaluate(() => {
             const allLinks = Array.from(document.querySelectorAll('#search a[href^="http"]'));
