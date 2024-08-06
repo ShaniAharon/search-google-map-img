@@ -115,7 +115,7 @@ export async function retriveResFromGoogle(searchQuery, num) {
         await page.goto(url, { waitUntil: "domcontentloaded" });
         await page.waitForSelector('#search a[href^="http"]', { timeout: 120000 });
 
-        const urls = await page.evaluate(() => {
+        let urls = await page.evaluate(() => {
             const allLinks = Array.from(document.querySelectorAll('#search a[href^="http"]'));
             const hrefs = allLinks.map(el => el.href)
             return hrefs ? hrefs : null;
