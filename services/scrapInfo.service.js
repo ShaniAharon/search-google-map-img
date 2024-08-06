@@ -86,6 +86,11 @@ export async function searchGoogle(searchQuery) {
     }
 }
 
+function filterUrls(urls) {
+    const problematicPatterns = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx)$/i;
+    return urls.filter(url => !problematicPatterns.test(url));
+}
+
 //retrive first 4 res from google search 
 export async function retriveResFromGoogle(searchQuery, num) {
     console.log(' num', num)
@@ -122,6 +127,8 @@ export async function retriveResFromGoogle(searchQuery, num) {
             await browser.close();
             return [];
         }
+        urls = filterUrls(urls);
+
         await browser.close();
         console.log("Browser closed");
         const end = Date.now();
@@ -218,22 +225,31 @@ export async function extractGoogleWebsitesInfo(urls) {
         });
 
         for (const url of urls) {
-            const page = await browser.newPage();
-            await page.setUserAgent(userAgent);
-            await page.goto(url, { waitUntil: "domcontentloaded" });
-            await page.waitForSelector('div', { timeout: 120000 });
+            try {
+                const page = await browser.newPage();
+                await page.setUserAgent(userAgent);
+                await page.goto(url, { waitUntil: "domcontentloaded" });
 
-            const result = await page.evaluate(() => {
-                const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
-                return { textCollected };
-            });
+                await page.waitForSelector('div', { timeout: 120000 });
 
-            results.push({
-                websiteLink: url,
-                textCollected: result.textCollected,
-            });
+                const result = await page.evaluate(() => {
+                    const textCollected = Array.from(document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')).map(el => el.innerText);
+                    return { textCollected };
+                });
 
-            await page.close();
+                results.push({
+                    websiteLink: url,
+                    textCollected: result.textCollected,
+                });
+
+                await page.close();
+            } catch (error) {
+                console.error(`Error extracting website info from ${url}:`, error.message);
+                results.push({
+                    websiteLink: url,
+                    textCollected: [],
+                });
+            }
         }
 
         await browser.close();
