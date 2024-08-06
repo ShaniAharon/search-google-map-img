@@ -86,6 +86,51 @@ export async function searchGoogle(searchQuery) {
     }
 }
 
+//retrive first 4 res from google search 
+export async function retriveResFromGoogle(searchQuery, num) {
+    // const query = searchQuery.split(" ").join("+");
+    const query = encodeURIComponent(searchQuery);;
+    const userAgent = selectRandomUserAgent();
+    try {
+        const start = Date.now();
+
+        const browser = await puppeteer.launch({
+            headless: true,
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
+        });
+
+        const page = await browser.newPage();
+        await page.setUserAgent(userAgent);
+        const url = `https://www.google.com/search?q=${query}`;
+        //TODO: can add logic to search in law article with google scholar 
+        // https://scholar.google.co.th/scholar?hl=en&as_sdt=0%2C5&q=accessibility+in+tourism&oq=
+        console.log("url", url);
+
+        await page.goto(url, { waitUntil: "domcontentloaded" });
+        await page.waitForSelector('#search a[href^="http"]', { timeout: 120000 });
+
+        const urls = await page.evaluate(() => {
+            const allLinks = Array.from(document.querySelectorAll('#search a[href^="http"]'));
+            const hrefs = allLinks.map(el => el.href).slice(0, num)
+            return hrefs ? hrefs : null;
+        });
+        console.log('urls', urls)
+
+        if (!urls) {
+            console.log("No results found.");
+            await browser.close();
+            return [];
+        }
+        await browser.close();
+        console.log("Browser closed");
+        const end = Date.now();
+        console.log(`Time in seconds: ${Math.floor((end - start) / 1000)}`);
+        return urls
+    } catch (error) {
+        console.log("Error at retriveResFromGoogle:", error.message);
+    }
+}
+
 //TODO: change to all the urls at once
 export async function extractGoogleWebsiteInfo(url) {
     // const query = searchQuery.split(" ").join("+");
@@ -160,7 +205,7 @@ export async function extractGoogleWebsiteInfo(url) {
 //TODO: change to all the urls at once
 export async function extractGoogleWebsitesInfo(urls) {
     // const query = searchQuery.split(" ").join("+");
-    // const query = encodeURIComponent(searchQuery);;
+    // const query = encodeURIComponent(searchQuery);;s
     const userAgent = selectRandomUserAgent();
     const results = [];
     try {
