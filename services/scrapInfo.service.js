@@ -88,6 +88,7 @@ export async function searchGoogle(searchQuery) {
 
 //retrive first 4 res from google search 
 export async function retriveResFromGoogle(searchQuery, num) {
+    console.log(' num', num)
     // const query = searchQuery.split(" ").join("+");
     const query = encodeURIComponent(searchQuery);;
     const userAgent = selectRandomUserAgent();
@@ -111,7 +112,7 @@ export async function retriveResFromGoogle(searchQuery, num) {
 
         const urls = await page.evaluate(() => {
             const allLinks = Array.from(document.querySelectorAll('#search a[href^="http"]'));
-            const hrefs = allLinks.map(el => el.href).slice(0, num)
+            const hrefs = allLinks.map(el => el.href)
             return hrefs ? hrefs : null;
         });
         console.log('urls', urls)
@@ -125,7 +126,7 @@ export async function retriveResFromGoogle(searchQuery, num) {
         console.log("Browser closed");
         const end = Date.now();
         console.log(`Time in seconds: ${Math.floor((end - start) / 1000)}`);
-        return urls
+        return urls.slice(0, num)
     } catch (error) {
         console.log("Error at retriveResFromGoogle:", error.message);
     }
